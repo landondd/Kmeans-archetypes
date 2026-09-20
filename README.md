@@ -16,11 +16,10 @@ Buildings are a major source of UK emissions, and rooftop solar is one of the mo
 
 ## Data
 
-- **346 local-authority files** of domestic EPC records, **18,085,834 rows** before cleaning.
+- **346 local-authority files** of domestic EPC records, 18,085,834 rows before cleaning.
 - **15,347,969 homes** after deduplication (one record per building) and removal of invalid values.
-- **63 features** common to all files, narrowed to **8** chosen for relevance to energy performance: floor area, energy efficiency score, energy rating, CO₂ emissions, CO₂ per m², property type, built form and main fuel.
+- **63 features** common to all files, narrowed to 8 chosen for relevance to energy performance: floor area, energy efficiency score, energy rating, CO₂ emissions, CO₂ per m², property type, built form and main fuel.
 
-The raw data isn't included in this repo; see [`data/README.md`](data/README.md) for how to get it.
 
 ## Method
 
@@ -33,22 +32,21 @@ The raw data isn't included in this repo; see [`data/README.md`](data/README.md)
 | 5 | `05_archetypes.py` | Profiles each archetype and produces the ranking tables |
 | 6 | `06_geography_maps.py` | Maps each archetype's share of homes on a 10 km grid, using British National Grid for equal-area cells |
 
-**Choosing K.** The elbow plot bends gradually rather than sharply, so it was paired with silhouette scores. Silhouette scores climb until K=13, where they reach about 0.43 and then level off, so K=13 was chosen as the smallest value on that plateau. Two of the thirteen clusters held only 409 and 39 homes, so they were treated as noise, leaving **11 working archetypes**.
+**Choosing K.** The elbow plot bends gradually rather than sharply, so it was paired with silhouette scores. Silhouette scores climb until K=13, where they reach about 0.43 and then level off, so K=13 was chosen as the smallest value on that plateau. Two of the thirteen clusters held only 409 and 39 homes, so they were treated as noise, leaving 11 working archetypes.
 
 <p float="left">
   <img src="figures/elbow_plot.png" width="49%" alt="Elbow plot of inertia for K from 2 to 30" />
   <img src="figures/silhouette_plot.png" width="49%" alt="Silhouette scores for K from 2 to 30" />
 </p>
 
-**Scaling to 15M rows.** Silhouette scores cost O(n²) to compute, which is impossible at 15 million rows. Each K was fitted on the full dataset, then scored on the same fixed random sample of 50,000 homes (seed 42), so every K is compared on identical data.
 
-**Estimating savings.** Each home is assumed to self-consume 855 kWh of solar generation per year (McKenna et al.), multiplied by the SAP 10.2 grid emissions factor of 0.136 kg CO₂/kWh. That gives **116.28 kg CO₂ saved per home per year**, compared against each archetype's average current emissions.
+**Estimating savings.** Each home is assumed to self-consume 855 kWh of solar generation per year (McKenna et al.), multiplied by the SAP 10.2 grid emissions factor of 0.136 kg CO₂/kWh. That gives 116.28 kg CO₂ saved per home per year, compared against each archetype's average current emissions.
 
 ## Results
 
 Across the 11 archetypes, rooftop solar on every home would save roughly **1.78 million tonnes of CO₂ per year**.
 
-The central finding is that **the two ways of ranking archetypes almost reverse each other:**
+The central finding is that the two ways of ranking archetypes almost reverse each other:
 
 <p float="left">
   <img src="figures/co2_reduction_ranking.png" width="49%" alt="Percentage CO₂ reduction per home by archetype" />
@@ -60,12 +58,6 @@ The central finding is that **the two ways of ranking archetypes almost reverse 
 
 For policy, the choice of metric decides the priority list. Targeting total tonnes points towards the large mainstream archetypes; targeting the proportional impact on each household points towards the efficient ones.
 
-## Limitations
-
-- **Upper-bound estimate:** the totals assume every home installs solar and self-consumes the same amount. Real uptake, roof suitability and orientation vary.
-- **One emissions factor for all records:** the 0.136 factor is current, but most certificates in the register were assessed under older factors, so current-emission baselines and savings aren't measured on quite the same basis.
-- **Modest cluster separation:** a silhouette score of 0.43 indicates real but overlapping structure, which is expected with mostly binary one-hot features. It was used to compare values of K, not to claim cleanly separated groups.
-- **Deduplication:** the pipeline keeps one record per building, but many certificate keys don't contain a parseable date, so the kept record isn't guaranteed to be the most recent inspection.
 
 ## Running it
 

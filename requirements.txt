@@ -1,0 +1,8 @@
+pandas
+numpy
+scikit-learn
+pyarrow
+matplotlib
+geopandas
+shapely
+joblib

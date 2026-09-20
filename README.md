@@ -59,31 +59,6 @@ The central finding is that the two ways of ranking archetypes almost reverse ea
 For policy, the choice of metric decides the priority list. Targeting total tonnes points towards the large mainstream archetypes; targeting the proportional impact on each household points towards the efficient ones.
 
 
-## Running it
-
-```bash
-git clone https://github.com/landondd/epc-solar-archetypes.git
-cd epc-solar-archetypes
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-```
-
-Put the data in place as described in [`data/README.md`](data/README.md), then run the scripts in order from the `src` folder (`01_eda.py` is exploratory and optional):
-
-```bash
-cd src
-python 02_preprocessing.py
-python 03a_kmeans_elbow.py
-python 03b_kmeans_silhouette.py
-python 03c_silhouette_plot.py
-python 03d_kmeans_fit.py
-python 04_co2_ranking.py
-python 05_archetypes.py
-python 06_geography_maps.py
-```
-
-All paths are set in `src/config.py`. Intermediate files go to `processed/`, and figures and tables to `outputs/`. At full scale, the K search (`03a` and `03b`) is the slow step, since it fits K-means 29 times on 15 million rows for each script.
-
 ## Stack
 
 Python, pandas, NumPy, scikit-learn, GeoPandas, Shapely, Matplotlib, PyArrow.
